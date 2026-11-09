@@ -1,0 +1,30 @@
+# draft recipe — WILL need edits on real hardware
+# aiming at a ~27B instruct base with LoRA, bf16 if HBM allows
+
+base_model: "Qwen/Qwen2.5-27B-Instruct"  # placeholder id
+output_dir: "./outputs/lora_sft_27b"
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  # TODO: double-check target modules for this arch
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+
+train:
+  bf16: true
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 8
+  learning_rate: 1.0e-4
+  num_train_epochs: 1
+  logging_steps: 10
+  save_steps: 100
+  max_seq_length: 4096  # bump later if bored
+
+data:
+  # put a real jsonl here; examples/ is fake
+  train_file: "data/train.jsonl"
+  eval_file: null
+
+notes: >
+  If ROCm OOM's somehow on 27B LoRA I will laugh and cry simultaneously.
